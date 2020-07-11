@@ -1,0 +1,25 @@
+
+# 인증서 발급
+
+# 오더링 서비스 노드 조직 정의
+# 도메인 네임: mobileid.com
+OrdererOrgs:
+  - Name: Orderer
+    Domain: mobileid.com
+    Specs:
+      - Hostname: orderer
+
+# 피어 노드 조직 정의
+PeerOrgs:
+  - Name: Verifier
+    Domain: verifier.mobileid.com
+    Template:
+      Count: 2  # 피어 수 = 2
+    Users:
+      Count: 1 # 사용자 수 = 1
+  - Name: Host
+    Domain: host.mobileid.com
+    Template:
+      Count: 2
+    Users:
+      Count: 1

@@ -1,0 +1,156 @@
+version: '2'
+
+networks:
+  mobileid:
+
+services:
+
+  orderer.mobileid.com:
+    container_name: orderer.mobileid.com
+    image: hyperledger/fabric-orderer:1.4.3
+    environment:
+      - ORDERER_GENERAL_LOGLEVEL=debug
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/etc/hyperledger/configtx/genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OrdererOrg
+      - ORDERER_GENERAL_LOCALMSPDIR=/etc/hyperledger/msp/orderer/msp
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/orderer
+    command: orderer
+    ports:
+      - 7050:7050
+    volumes:
+      - ./config/:/etc/hyperledger/configtx
+      - ./crypto-config/ordererOrganizations/mobileid.com/orderers/orderer.mobileid.com/:/etc/hyperledger/msp/orderer
+    networks:
+      - mobileid
+  
+  peer0.verifier.mobileid.com:
+    container_name: peer0.verifier.mobileid.com
+    image: hyperledger/fabric-peer:1.4.3
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_ID=peer0.verifier.mobileid.com
+      - CORE_LOGGING_PEER=debug
+      - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_LOCALMSPID=VerifierOrg
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/peer/
+      - CORE_PEER_ADDRESS=peer0.verifier.moileid.com:7001
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.verifier.mobileid.com:7001
+      - CORE_PEER_GOSSIP_ENDPOINT=peer0.verifier.mobileid.com:7001
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.verifier.mobileid.com:7001
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=net_mobileid #net 확인
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: peer node start
+    ports:
+      - 7001:7001
+    volumes:
+      - /var/run/:/host/var/run/
+      - ./crypto-config/peerOrganizations/verifier.mobileid.com/peers/peer0.verifier.mobileid.com/msp:/etc/hyperledger/msp/peer
+      - ./crypto-config/peerOrganizations/verifier.mobileid.com/users/:/etc/hyperledger/msp/users
+      - ./config:/etc/hyperledger/configtx
+    depends_on:
+      - orderer.mobileid.com
+    networks:
+     - mobileid
+
+  peer1.verifier.mobileid.com:
+    container_name: peer1.verifier.mobileid.com
+    image: hyperledger/fabric-peer:1.4.3
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_ID=peer1.verifier.mobileid.com
+      - CORE_LOGGING_PEER=debug
+      - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_LOCALMSPID=VerifierOrg
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/peer/
+      - CORE_PEER_ADDRESS=peer1.verifier.mobileid.com:7001
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=net_mobileid
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: peer nod start
+    ports:
+      - 7002:7002
+    volumes:
+      - /var/run/:/host/var/run/
+      - ./crypto-config/peerOrganizations/verifier.mobileid.com/peers/peer1.verifier.mobileid.com/msp:/etc/hyperledger/msp/peer
+      - ./crypto-config/peerOrganizations/verifier.mobileid.com/users/:/etc/hyperledger/msp/users
+      - ./config:/etc/hyperledger/configtx
+    depends_on:
+      - orderer.mobileid.com
+    networks:
+      - mobileid
+
+  peer0.host.mobileid.com:
+    container_name: peer0.host.mobileid.com
+    image: hyperledger/fabric-peer:1.4.3
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_ID=peer0.host.mobileid.com
+      - CORE_LOGGING_PEER=debug
+      - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_LOCALMSPID=HostOrg
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/peer/
+      - CORE_PEER_ADDRESS=peer0.host.mobileid.com:8001
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=net_mobileid
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: peer nod start
+    ports:
+      - 8001:8001
+    volumes:
+      - /var/run/:/host/var/run/
+      - ./crypto-config/peerOrganizations/host.mobileid.com/peers/peer0.host.mobileid.com/msp:/etc/hyperledger/msp/peer
+      - ./crypto-config/peerOrganizations/host.mobileid.com/users/:/etc/hyperledger/msp/users
+      - ./config:/etc/hyperledger/configtx
+    depends_on:
+      - orderer.mobileid.com
+    networks:
+      - mobileid
+  
+  peer1.host.mobileid.com:
+    container_name: peer1.host.mobileid.com
+    image: hyperledger/fabric-peer:1.4.3
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_ID=peer1.host.mobileid.com
+      - CORE_LOGGING_PEER=debug
+      - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_LOCALMSPID=HostOrg
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/peer/
+      - CORE_PEER_ADDRESS=peer1.host.mobileid.com:8002
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=net_mobileid
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: peer nod start
+    ports:
+      - 8002:8002
+    volumes:
+      - /var/run/:/host/var/run/
+      - ./crypto-config/peerOrganizations/host.mobileid.com/peers/peer1.host.mobileid.com/msp:/etc/hyperledger/msp/peer
+      - ./crypto-config/peerOrganizations/host.mobileid.com/users/:/etc/hyperledger/msp/users
+      - ./config:/etc/hyperledger/configtx
+    depends_on:
+      - orderer.mobileid.com
+    networks:
+      - mobileid
+
+  cli:
+    container_name: cli
+    image: hyperledger/fabric-tools
+    tty: true
+    environment:
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_ID=cli
+      - CORE_PEER_ADDRESS=peer0.verifier.mobileid.com:7001
+      - CORE_PEER_LOCALMSPID=VerifierOrg
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/verifier.mobileid.com/users/Admin@verifier.mobileid.com/msp
+      - CORE_CHAINCODE_KEEPALIVE=10
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash
+    volumes:
+      - /var/run/:/host/var/run/
+      - ./../chaincode/:/opt/gopath/src/chaincode/
+      - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
+      - ./config:/etc/hyperledger/configtx
+    networks:
+      - mobileid
