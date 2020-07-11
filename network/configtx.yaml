@@ -11,7 +11,7 @@ Organizations:
     MSPDir: crypto-config/peerOrganizations/verifier.mobileid.com/msp
     AnchorPeers:
       - Host: peer0.verifier.mobileid.com
-        Port: 7001
+        Port: 7051
       
   - &HostOrg
     Name: HostOrg
@@ -19,7 +19,7 @@ Organizations:
     MSPDir: crypto-config/peerOrganizations/host.mobileid.com/msp
     AnchorPeers:
       - Host: peer0.host.mobileid.com
-        Port: 8001
+        Port: 7051
 
 Orderer : &OrdererDefaults
   OrdererType: solo # 추후 raft로 변경
@@ -29,6 +29,9 @@ Orderer : &OrdererDefaults
     MaxMessageCount: 10
     AbsoluteMaxBytes: 99 MB
     PreferredMaxBytes: 512 KB
+  Kafka:
+    Brokers:
+      - 127.0.0.1:9092
   Organizations:
 
 Application: &ApplicationDefaults

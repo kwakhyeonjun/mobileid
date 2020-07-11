@@ -35,15 +35,16 @@ services:
       - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
       - CORE_PEER_LOCALMSPID=VerifierOrg
       - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/peer/
-      - CORE_PEER_ADDRESS=peer0.verifier.moileid.com:7001
-      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.verifier.mobileid.com:7001
-      - CORE_PEER_GOSSIP_ENDPOINT=peer0.verifier.mobileid.com:7001
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.verifier.mobileid.com:7001
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=net_mobileid #net 확인
+      - CORE_PEER_ADDRESS=peer0.verifier.moileid.com:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.verifier.mobileid.com:7051
+      - CORE_PEER_GOSSIP_ENDPOINT=peer0.verifier.mobileid.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.verifier.mobileid.com:7051
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=net_mobileid
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052 #임시
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric
     command: peer node start
     ports:
-      - 7001:7001
+      - 7051:7051
     volumes:
       - /var/run/:/host/var/run/
       - ./crypto-config/peerOrganizations/verifier.mobileid.com/peers/peer0.verifier.mobileid.com/msp:/etc/hyperledger/msp/peer
@@ -64,12 +65,13 @@ services:
       - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
       - CORE_PEER_LOCALMSPID=VerifierOrg
       - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/peer/
-      - CORE_PEER_ADDRESS=peer1.verifier.mobileid.com:7001
+      - CORE_PEER_ADDRESS=peer1.verifier.mobileid.com:7051
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=net_mobileid
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7054 #임시
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric
-    command: peer nod start
+    command: peer node start
     ports:
-      - 7002:7002
+      - 7053:7053
     volumes:
       - /var/run/:/host/var/run/
       - ./crypto-config/peerOrganizations/verifier.mobileid.com/peers/peer1.verifier.mobileid.com/msp:/etc/hyperledger/msp/peer
@@ -90,12 +92,13 @@ services:
       - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
       - CORE_PEER_LOCALMSPID=HostOrg
       - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/peer/
-      - CORE_PEER_ADDRESS=peer0.host.mobileid.com:8001
+      - CORE_PEER_ADDRESS=peer0.host.mobileid.com:7051
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=net_mobileid
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052 #임시
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric
-    command: peer nod start
+    command: peer node start
     ports:
-      - 8001:8001
+      - 9051:7051
     volumes:
       - /var/run/:/host/var/run/
       - ./crypto-config/peerOrganizations/host.mobileid.com/peers/peer0.host.mobileid.com/msp:/etc/hyperledger/msp/peer
@@ -116,12 +119,13 @@ services:
       - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
       - CORE_PEER_LOCALMSPID=HostOrg
       - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/peer/
-      - CORE_PEER_ADDRESS=peer1.host.mobileid.com:8002
+      - CORE_PEER_ADDRESS=peer1.host.mobileid.com:7051
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=net_mobileid
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7054 #임시
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric
-    command: peer nod start
+    command: peer node start
     ports:
-      - 8002:8002
+      - 9053:7053
     volumes:
       - /var/run/:/host/var/run/
       - ./crypto-config/peerOrganizations/host.mobileid.com/peers/peer1.host.mobileid.com/msp:/etc/hyperledger/msp/peer
@@ -134,14 +138,14 @@ services:
 
   cli:
     container_name: cli
-    image: hyperledger/fabric-tools
+    image: hyperledger/fabric-tools:1.4.3
     tty: true
     environment:
       - GOPATH=/opt/gopath
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
       - FABRIC_LOGGING_SPEC=INFO
       - CORE_PEER_ID=cli
-      - CORE_PEER_ADDRESS=peer0.verifier.mobileid.com:7001
+      - CORE_PEER_ADDRESS=peer0.verifier.mobileid.com:7051
       - CORE_PEER_LOCALMSPID=VerifierOrg
       - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/verifier.mobileid.com/users/Admin@verifier.mobileid.com/msp
       - CORE_CHAINCODE_KEEPALIVE=10
